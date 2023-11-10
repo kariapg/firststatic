@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+        #box {
+            position: relative;
+            height: 300px;
+            width: 300px;
+            border: 1px solid black;
+        }
+        #circle {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 50px;
+            width: 50px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        #text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            text-align: center;
+        }
+        #playButton {
+            display: block;
+            width: 100px;
+            height: 50px;
+            margin: 20px auto;
+        }
+        #timer {
+            text-align: center;
+        }
+        .slider {
+            width: 300px;
+            margin: 0 auto;
+        }
+    </style>
+    <title>Breathing Box</title>
+</head>
+<body>
+    <h2 style="text-align:center;" >Breathing Box</h2>
+    <div class="container">
+        <div>
+            <input type="range" min="5" max="10" value="5" class="slider" id="inhaleSlider">
+            <p>Choose inhale duration: <span id="inhaleDuration">5</span> seconds</p>
+            <input type="range" min="5" max="10" value="5" class="slider" id="holdSlider">
+            <p>Choose hold duration: <span id="holdDuration">5</span> seconds</p>
+            <input type="range" min="5" max="15" value="5" class="slider" id="exhaleSlider">
+            <p>Choose exhale duration: <span id="exhaleDuration">5</span> seconds</p>
+            <input type="range" min="5" max="20" value="5" class="slider" id="cycleSlider">
+            <p>Choose number of cycles: <span id="cycleNumber">5</span></p>
+        </div>
+        <div id="box">
+            <div id="circle"></div>
+            <div id="text"></div>
+        </div>
+    </div>
+    <button id="playButton" onclick="startAnimation()">Play</button>
+    <div id="timer">0 seconds</div>
+
+    <script>
+        var circle = document.getElementById('circle');
+        var text = document.getElementById('text');
+        var playButton = document.getElementById('playButton');
+        var timer = document.getElementById('timer');
+        var inhaleSlider = document.getElementById('inhaleSlider');
+        var holdSlider = document.getElementById('holdSlider');
+        var exhaleSlider = document.getElementById('exhaleSlider');
+        var cycleSlider = document.getElementById('cycleSlider');
+        var inhaleDuration = document.getElementById('inhaleDuration');
+        var holdDuration = document.getElementById('holdDuration');
+        var exhaleDuration = document.getElementById('exhaleDuration');
+        var cycleNumber = document.getElementById('cycleNumber');
+        var counter = 0;
+        var timerInterval;
+
+        inhaleSlider.oninput = function() {
+            inhaleDuration.innerHTML = this.value;
+        }
+
+        holdSlider.oninput = function() {
+            holdDuration.innerHTML = this.value;
+        }
+
+        exhaleSlider.oninput = function() {
+            exhaleDuration.innerHTML = this.value;
+        }
+
+        cycleSlider.oninput = function() {
+            cycleNumber.innerHTML = this.value;
+        }
+
+        function startAnimation() {
+            playButton.disabled = true;
+            timerInterval = setInterval(updateTimer, 1000);
+            moveUp();
+        }
+
+        function updateTimer() {
+            counter++;
+            timer.innerHTML = counter + ' seconds';
+        }
+
+        function moveUp() {
+            text.innerHTML = 'Inhale';
+            circle.style.transition = inhaleSlider.value + 's';
+            circle.style.bottom = '250px';
+            setTimeout(moveRight, inhaleSlider.value * 1000);
+        }
+
+        function moveRight() {
+            text.innerHTML = 'Hold';
+            circle.style.transition = holdSlider.value + 's';
+            circle.style.left = '250px';
+            setTimeout(moveDown, holdSlider.value * 1000);
+        }
+
+        function moveDown() {
+            text.innerHTML = 'Exhale';
+            circle.style.transition = exhaleSlider.value + 's';
+            circle.style.bottom = '0';
+            setTimeout(moveLeft, exhaleSlider.value * 1000);
+        }
+
+        function moveLeft() {
+            text.innerHTML = 'Hold';
+            circle.style.transition = holdSlider.value + 's';
+            circle.style.left = '0';
+            setTimeout(resetAnimation, holdSlider.value * 1000);
+        }
+
+        function resetAnimation() {
+            circle.style.transition = '0s';
+            if (counter < cycleSlider.value * (parseInt(inhaleSlider.value) + parseInt(holdSlider.value) + parseInt(exhaleSlider.value) + parseInt(holdSlider.value))) {
+                setTimeout(startAnimation, 0);
+            } else {
+                playButton.disabled = false;
+                clearInterval(timerInterval);
+                counter = 0;
+                timer.innerHTML = '0 seconds';
+            }
+        }
+    </script>
+</body>
+</html>
